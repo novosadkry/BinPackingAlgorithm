@@ -63,6 +63,7 @@ public class PlaneBuilder : MonoBehaviour
 
         var planeWidth = planeRenderer.block.width;
         var planeHeight = planeRenderer.block.height;
+        var planeCollider = planeRenderer.collider2D;
 
         foreach (var render in blockRenderers)
         {
@@ -74,14 +75,17 @@ public class PlaneBuilder : MonoBehaviour
 
             var width = render.block.width;
             var height = render.block.height;
+            var rotation = render.block.rotation;
 
             var pos = new Vector2(
                        (x / planeWidth  - 0.5f) + (width  / planeWidth  * 0.5f),
                 1.0f - (y / planeHeight + 0.5f) - (height / planeHeight * 0.5f)
             );
 
+            pos.Scale(planeCollider.size);
+
             render.transform.position = plane.TransformPoint(pos);
-            render.transform.localScale = new Vector2(width, height);
+            render.transform.rotation = Quaternion.Euler(0, 0, rotation);
 
             if (visualize)
                 yield return new WaitForSeconds(0.1f);

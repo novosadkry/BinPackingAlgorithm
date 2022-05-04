@@ -52,6 +52,7 @@ public class Packer
         if (block.height <= node.width && block.width <= node.height)
         {
             (block.height, block.width) = (block.width, block.height);
+            block.rotation += 90;
             return node;
         }
 

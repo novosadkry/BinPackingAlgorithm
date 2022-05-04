@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 [Serializable]
 public class Block
@@ -8,4 +7,5 @@ public class Block
 
     public float width;
     public float height;
+    public float rotation;
 }

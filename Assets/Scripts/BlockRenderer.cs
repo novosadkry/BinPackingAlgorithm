@@ -1,22 +1,25 @@
 using UnityEngine;
 
+[SelectionBase]
 [ExecuteInEditMode]
-[RequireComponent(typeof(SpriteRenderer))]
+[RequireComponent(typeof(BoxCollider2D))]
 public class BlockRenderer : MonoBehaviour
 {
     public Color color;
     public Block block;
 
-    private SpriteRenderer _spriteRenderer;
+    [HideInInspector] public BoxCollider2D collider2D;
+    [HideInInspector] public SpriteRenderer spriteRenderer;
 
     private void Awake()
     {
-        _spriteRenderer = GetComponent<SpriteRenderer>();
+        collider2D = GetComponent<BoxCollider2D>();
+        spriteRenderer = GetComponentInChildren<SpriteRenderer>();
     }
 
     private void Start()
     {
-        _spriteRenderer.color = color;
+        spriteRenderer.color = color;
     }
 
     private void Update()
@@ -24,13 +27,19 @@ public class BlockRenderer : MonoBehaviour
         if (Application.isPlaying || !transform.hasChanged)
             return;
 
-        block.width = transform.localScale.x;
-        block.height = transform.localScale.y;
+        if (collider2D == null)
+        {
+            collider2D = GetComponent<BoxCollider2D>();
+            return;
+        }
+
+        block.width = collider2D.size.x;
+        block.height = collider2D.size.y;
     }
 
     private void OnValidate()
     {
-        GetComponent<SpriteRenderer>().color = color;
-        transform.localScale = new Vector3(block.width, block.height, 1);
+        GetComponentInChildren<SpriteRenderer>().color = color;
+        GetComponent<BoxCollider2D>().size = new Vector2(block.width, block.height);
     }
 }
