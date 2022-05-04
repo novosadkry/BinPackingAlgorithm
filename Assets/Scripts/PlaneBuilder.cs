@@ -18,6 +18,9 @@ internal class PlaneBuilderEditor : Editor
     {
         base.OnInspectorGUI();
 
+        if (GUILayout.Button("Load Blocks"))
+            builder.LoadBlocks();
+
         if (GUILayout.Button("Run"))
             builder.Run();
     }
@@ -28,8 +31,13 @@ public class PlaneBuilder : MonoBehaviour
     public BlockRenderer planeRenderer;
     public List<BlockRenderer> blockRenderers;
 
-    private void Start()
+    [Header("Settings")]
+    public bool visualize;
+
+    public void LoadBlocks()
     {
+        blockRenderers.Clear();
+
         foreach (var render in FindObjectsOfType<BlockRenderer>())
         {
             if (render != planeRenderer)
@@ -74,7 +82,9 @@ public class PlaneBuilder : MonoBehaviour
 
             render.transform.position = plane.TransformPoint(pos);
             render.transform.localScale = new Vector2(width, height);
-            yield return new WaitForSeconds(0.1f);
+
+            if (visualize)
+                yield return new WaitForSeconds(0.1f);
         }
 
         yield return null;

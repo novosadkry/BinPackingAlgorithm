@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[ExecuteInEditMode]
 [RequireComponent(typeof(SpriteRenderer))]
 public class BlockRenderer : MonoBehaviour
 {
@@ -16,6 +17,15 @@ public class BlockRenderer : MonoBehaviour
     private void Start()
     {
         _spriteRenderer.color = color;
+    }
+
+    private void Update()
+    {
+        if (Application.isPlaying || !transform.hasChanged)
+            return;
+
+        block.width = transform.localScale.x;
+        block.height = transform.localScale.y;
     }
 
     private void OnValidate()
