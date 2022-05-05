@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 [CustomEditor(typeof(PlaneBuilder))]
 internal class PlaneBuilderEditor : Editor
@@ -22,35 +21,75 @@ internal class PlaneBuilderEditor : Editor
         if (GUILayout.Button("Run") && Application.isPlaying)
             builder.Run();
 
-        if (GUILayout.Button("Reset"))
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        if (GUILayout.Button("Reset") && Application.isPlaying)
+        {
+            var blocks = FindObjectsOfType<BlockRenderer>()
+                .Except(builder.planes)
+                .ToList();
+
+            int count = 0;
+            foreach (var value in builder.restore)
+            {
+                blocks[count].transform.position = value.position;
+                blocks[count].transform.rotation = value.rotation;
+                blocks[count].block.width = value.blockWidth;
+                blocks[count].block.height = value.blockHeight;
+                blocks[count].block.rotation = value.blockRotation;
+
+                count++;
+            }
+
+            builder.Setup();
+        }
     }
 }
 
+public struct RestoreValues
+{
+    public Vector3 position;
+    public Quaternion rotation;
+    public float blockWidth;
+    public float blockHeight;
+    public float blockRotation;
+}
 
 public class PlaneBuilder : MonoBehaviour
 {
     public BlockRenderer planePrefab;
     public List<BlockRenderer> blockRenderers;
 
-    private List<BlockRenderer> planes;
-
     [Header("Settings")]
     public float planeWidth = 10;
     public float planeHeight = 5;
     public bool visualize;
 
+    [Header("Controls")]
+    [HideInInspector] public List<RestoreValues> restore;
+    [HideInInspector] public List<BlockRenderer> planes;
+
     private void Awake()
     {
         planes = new List<BlockRenderer>();
+        restore = new List<RestoreValues>();
     }
 
     private void Start()
     {
+        foreach (var block in FindObjectsOfType<BlockRenderer>())
+        {
+            restore.Add(new RestoreValues {
+                position = block.transform.position,
+                rotation = block.transform.rotation,
+                blockWidth = block.block.width,
+                blockHeight = block.block.height,
+                blockRotation = block.block.rotation
+            });
+        }
+
         Setup();
     }
 
-    private void Setup()
+    public void Setup()
     {
         blockRenderers.Clear();
         blockRenderers.AddRange(
@@ -98,7 +137,7 @@ public class PlaneBuilder : MonoBehaviour
             plane.spriteRenderer.transform.localScale =
                 new Vector2(planeWidth, planeHeight);
             plane.transform.position +=
-                Vector3.down * (planeHeight + 1) * planes.Count;
+                Vector3.down * ((planeHeight + 1) * planes.Count);
             planes.Add(plane);
 
             StartCoroutine(TransformBlocks(plane, used));
