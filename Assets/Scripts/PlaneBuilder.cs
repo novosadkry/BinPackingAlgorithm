@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [CustomEditor(typeof(PlaneBuilder))]
 internal class PlaneBuilderEditor : Editor
@@ -18,69 +19,103 @@ internal class PlaneBuilderEditor : Editor
     {
         base.OnInspectorGUI();
 
-        if (GUILayout.Button("Load Blocks"))
-            builder.LoadBlocks();
-
-        if (GUILayout.Button("Run"))
+        if (GUILayout.Button("Run") && Application.isPlaying)
             builder.Run();
+
+        if (GUILayout.Button("Reset"))
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
 
+
 public class PlaneBuilder : MonoBehaviour
 {
-    public BlockRenderer planeRenderer;
+    public BlockRenderer planePrefab;
     public List<BlockRenderer> blockRenderers;
 
+    private List<BlockRenderer> planes;
+
     [Header("Settings")]
+    public float planeWidth = 10;
+    public float planeHeight = 5;
     public bool visualize;
 
-    public void LoadBlocks()
+    private void Awake()
+    {
+        planes = new List<BlockRenderer>();
+    }
+
+    private void Start()
+    {
+        Setup();
+    }
+
+    private void Setup()
     {
         blockRenderers.Clear();
+        blockRenderers.AddRange(
+            FindObjectsOfType<BlockRenderer>()
+                .Except(planes)
+        );
 
-        foreach (var render in FindObjectsOfType<BlockRenderer>())
-        {
-            if (render != planeRenderer)
-                blockRenderers.Add(render);
-        }
+        foreach (var plane in planes)
+            Destroy(plane.gameObject);
 
-        blockRenderers = blockRenderers
-            .OrderByDescending(x => x.block.width * x.block.height)
-            .ToList();
+        planes.Clear();
     }
 
     public void Run()
     {
-        var packer = new Packer(planeRenderer.block);
-        packer.Fit(blockRenderers.Select(x => x.block));
+        Setup();
 
-        var unused = blockRenderers
-            .Where(x => !x.block.fit.used)
+        var blocks = blockRenderers
+            .OrderByDescending(x => x.block.width * x.block.height)
             .ToList();
 
-        var used = blockRenderers
-            .Except(unused);
+        // Reset block used status
+        foreach (var value in blocks)
+            value.block.fit.used = false;
 
-        StartCoroutine(TransformBlocks(used));
-
-        if (unused.Count > 0)
+        while (true)
         {
-            var copy = Instantiate(this);
-            copy.transform.position += Vector3.down * 6;
-            copy.blockRenderers = unused;
-            copy.Run();
+            var root = new Block {
+                width = planeWidth,
+                height = planeHeight
+            };
+
+            var packer = new Packer(root);
+            packer.Fit(blocks.Select(x => x.block));
+
+            var used = blocks
+                .Where(value => value.block.fit.used)
+                .ToList();
+
+            if (used.Count < 1)
+                return;
+
+            var plane = Instantiate(planePrefab);
+            plane.block = root;
+            plane.spriteRenderer.transform.localScale =
+                new Vector2(planeWidth, planeHeight);
+            plane.transform.position +=
+                Vector3.down * (planeHeight + 1) * planes.Count;
+            planes.Add(plane);
+
+            StartCoroutine(TransformBlocks(plane, used));
+
+            blocks = blocks
+                .Except(used)
+                .OrderByDescending(x => x.block.width * x.block.height)
+                .ToList();
         }
     }
 
-    private IEnumerator TransformBlocks(IEnumerable<BlockRenderer> renderers)
+    private IEnumerator TransformBlocks(BlockRenderer plane, IEnumerable<BlockRenderer> blocks)
     {
-        var plane = planeRenderer.transform;
+        var planeWidth = plane.block.width;
+        var planeHeight = plane.block.height;
 
-        var planeWidth = planeRenderer.block.width;
-        var planeHeight = planeRenderer.block.height;
-        var planeCollider = planeRenderer.collider2D;
-
-        foreach (var render in renderers)
+        foreach (var render in blocks)
         {
             var node = render.block.fit;
             if (!node.used) continue;
@@ -97,9 +132,9 @@ public class PlaneBuilder : MonoBehaviour
                 1.0f - (y / planeHeight + 0.5f) - (height / planeHeight * 0.5f)
             );
 
-            pos.Scale(planeCollider.size);
+            pos.Scale(new Vector2(planeWidth, planeHeight));
 
-            render.transform.position = plane.TransformPoint(pos);
+            render.transform.position = plane.transform.TransformPoint(pos);
             render.transform.rotation = Quaternion.Euler(0, 0, rotation);
 
             if (visualize)
