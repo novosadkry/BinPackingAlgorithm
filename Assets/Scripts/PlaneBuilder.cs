@@ -61,6 +61,7 @@ public class PlaneBuilder : MonoBehaviour
     [Header("Settings")]
     public float planeWidth = 10;
     public float planeHeight = 5;
+    public float padding = 0.1f;
     public bool visualize;
 
     [Header("Controls")]
@@ -96,6 +97,9 @@ public class PlaneBuilder : MonoBehaviour
             FindObjectsOfType<BlockRenderer>()
                 .Except(planes)
         );
+
+        foreach (var block in blockRenderers)
+            block.block.padding = padding;
 
         foreach (var plane in planes)
             Destroy(plane.gameObject);

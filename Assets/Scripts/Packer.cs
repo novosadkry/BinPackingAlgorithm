@@ -70,18 +70,18 @@ public class Packer
         node.down = new PackerNode {
             position = new Vector2(
                 node.position.x,
-                node.position.y + block.height
+                node.position.y + block.height + block.padding
             ),
             width = node.width,
-            height = node.height - block.height,
+            height = node.height - block.height - block.padding,
         };
 
         node.right = new PackerNode {
             position = new Vector2(
-                node.position.x + block.width,
+                node.position.x + block.width + block.padding,
                 node.position.y
             ),
-            width = node.width - block.width,
+            width = node.width - block.width - block.padding,
             height = block.height,
         };
 

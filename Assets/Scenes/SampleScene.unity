@@ -161,6 +161,7 @@ MonoBehaviour:
     width: 5
     height: 2
     rotation: 0
+    padding: 0
   scaleSprite: 1
   spriteRenderer: {fileID: 869403372}
 --- !u!4 &160394736
@@ -217,6 +218,7 @@ MonoBehaviour:
     width: 1.5
     height: 1
     rotation: 0
+    padding: 0
   scaleSprite: 1
   spriteRenderer: {fileID: 1446602574}
 --- !u!4 &292544108
@@ -268,6 +270,7 @@ MonoBehaviour:
   blockRenderers: []
   planeWidth: 10
   planeHeight: 5
+  padding: 0.1
   visualize: 0
   planes: []
 --- !u!4 &498401468
@@ -407,6 +410,7 @@ MonoBehaviour:
     width: 1
     height: 0.75
     rotation: 0
+    padding: 0
   scaleSprite: 0
   spriteRenderer: {fileID: 1837301969}
 --- !u!4 &637914023
@@ -631,6 +635,7 @@ MonoBehaviour:
     width: 1
     height: 6
     rotation: 0
+    padding: 0
   scaleSprite: 1
   spriteRenderer: {fileID: 1206606326}
 --- !u!4 &712746699
@@ -898,6 +903,7 @@ MonoBehaviour:
     width: 6
     height: 1
     rotation: 0
+    padding: 0
   scaleSprite: 1
   spriteRenderer: {fileID: 1132477575}
 --- !u!4 &938361331
@@ -954,6 +960,7 @@ MonoBehaviour:
     width: 2
     height: 4.75
     rotation: 0
+    padding: 0
   scaleSprite: 1
   spriteRenderer: {fileID: 1490959785}
 --- !u!4 &1098296569
@@ -1010,6 +1017,7 @@ MonoBehaviour:
     width: 1.5
     height: 1
     rotation: 0
+    padding: 0
   scaleSprite: 1
   spriteRenderer: {fileID: 671785819}
 --- !u!4 &1115459938
@@ -1385,6 +1393,7 @@ MonoBehaviour:
     width: 1
     height: 2
     rotation: 0
+    padding: 0
   scaleSprite: 0
   spriteRenderer: {fileID: 698373805}
 --- !u!4 &1400535357
@@ -1693,6 +1702,7 @@ MonoBehaviour:
     width: 1
     height: 2
     rotation: 0
+    padding: 0
   scaleSprite: 1
   spriteRenderer: {fileID: 808146685}
 --- !u!4 &1546266277
@@ -1749,6 +1759,7 @@ MonoBehaviour:
     width: 1
     height: 5.25
     rotation: 0
+    padding: 0
   scaleSprite: 1
   spriteRenderer: {fileID: 1431028676}
 --- !u!4 &1555949017
@@ -1889,6 +1900,7 @@ MonoBehaviour:
     width: 1.5
     height: 1
     rotation: 0
+    padding: 0
   scaleSprite: 1
   spriteRenderer: {fileID: 1341042999}
 --- !u!4 &1956292572
@@ -1944,6 +1956,7 @@ MonoBehaviour:
     width: 1
     height: 1
     rotation: 0
+    padding: 0
   scaleSprite: 0
   spriteRenderer: {fileID: 6887594055613550000}
 --- !u!1 &6887594055570594351

@@ -8,4 +8,5 @@ public class Block
     public float width;
     public float height;
     public float rotation;
+    public float padding;
 }
