@@ -54,10 +54,25 @@ public class PlaneBuilder : MonoBehaviour
         var packer = new Packer(planeRenderer.block);
         packer.Fit(blockRenderers.Select(x => x.block));
 
-        StartCoroutine(TransformBlocks());
+        var unused = blockRenderers
+            .Where(x => !x.block.fit.used)
+            .ToList();
+
+        var used = blockRenderers
+            .Except(unused);
+
+        StartCoroutine(TransformBlocks(used));
+
+        if (unused.Count > 0)
+        {
+            var copy = Instantiate(this);
+            copy.transform.position += Vector3.down * 6;
+            copy.blockRenderers = unused;
+            copy.Run();
+        }
     }
 
-    private IEnumerator TransformBlocks()
+    private IEnumerator TransformBlocks(IEnumerable<BlockRenderer> renderers)
     {
         var plane = planeRenderer.transform;
 
@@ -65,7 +80,7 @@ public class PlaneBuilder : MonoBehaviour
         var planeHeight = planeRenderer.block.height;
         var planeCollider = planeRenderer.collider2D;
 
-        foreach (var render in blockRenderers)
+        foreach (var render in renderers)
         {
             var node = render.block.fit;
             if (!node.used) continue;
